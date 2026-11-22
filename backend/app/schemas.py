@@ -29,3 +29,17 @@ class EntryPayload(BaseModel):
 class ActionPayload(BaseModel):
     action: str
     remark: str | None = None
+
+
+class ImportPayload(BaseModel):
+    """外部标签样本文件上传：文件名 + 文本内容（CSV）。"""
+    filename: str
+    content: str
+    remark: str | None = None
+
+
+class ScanPayload(BaseModel):
+    """分层扫描提交：本轮名额与样本来源文件（留空则按规则扫描范围）。"""
+    quota: int = 2
+    source_file: str | None = None
+    remark: str | None = None

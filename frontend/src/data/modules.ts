@@ -200,6 +200,17 @@ export const MODULES: ModuleMeta[] = [
     actionTargets: {"发起发送": "已发送", "确认送达": "已确认", "标记过期": "已过期"},
     metrics: ["变更通知总数", "待发送通知", "已发送通知"],
   },
+  {
+    key: "external_label_sample",
+    name: "外部标签样本",
+    entity: "标签样本",
+    desc: "上传外部检查员抽样文件，按分区键与标签来源逐行核验归属，生成可复核的外部标签样本清单，支撑合规分层扫描。",
+    fields: ["样本编号", "来源文件", "文件行号", "分区键", "文件分组", "标签来源", "归属组", "标签版本"],
+    statuses: ["待核", "已确认", "已扫描", "已跳过"],
+    actions: ["重新核验", "退回待核"],
+    actionTargets: {"重新核验": "已确认", "退回待核": "待核"},
+    metrics: ["标签样本总数", "已确认样本", "已跳过样本"],
+  },
 ]
 
 export const MODULE_BY_KEY: Map<string, ModuleMeta> = new Map(

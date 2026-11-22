@@ -21,6 +21,7 @@ from app.services.backfill_job import BackfillJobService
 from app.services.quality_report import QualityReportService
 from app.services.reclaim_job import ReclaimJobService
 from app.services.change_notice import ChangeNoticeService
+from app.services.external_label_sample import ExternalLabelSampleService
 
 _SERVICE_CLASSES = [
     AssetCatalogService,
@@ -41,6 +42,7 @@ _SERVICE_CLASSES = [
     QualityReportService,
     ReclaimJobService,
     ChangeNoticeService,
+    ExternalLabelSampleService,
 ]
 
 _INSTANCES: dict[str, object] = {}
@@ -80,4 +82,5 @@ __all__ = [
     "QualityReportService",
     "ReclaimJobService",
     "ChangeNoticeService",
+    "ExternalLabelSampleService",
 ]

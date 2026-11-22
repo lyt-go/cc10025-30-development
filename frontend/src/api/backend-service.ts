@@ -1,6 +1,13 @@
 import { request } from './client'
 import { moduleMeta } from '@/data/modules'
-import type { ActionResult, EntryRow, OverviewResult, PageResult } from '@/data/types'
+import type {
+  ActionResult,
+  EntryRow,
+  OverviewResult,
+  PageResult,
+  ScanReport,
+  ScanReportSummary,
+} from '@/data/types'
 
 export { moduleMeta }
 
@@ -57,5 +64,40 @@ export async function downloadEntries(
 export async function loadOverview(): Promise<OverviewResult> {
   const response = await request('/api/overview')
   if (!response.ok) throw new Error('运营概览读取失败')
+  return await response.json()
+}
+
+export async function importSampleFile(
+  filename: string,
+  content: string,
+): Promise<ActionResult> {
+  const response = await request('/api/external_label_sample/import', {
+    method: 'POST',
+    body: JSON.stringify({ filename, content }),
+  })
+  return await response.json()
+}
+
+export async function runStratifiedScan(
+  id: number,
+  quota: number,
+  sourceFile: string,
+): Promise<ActionResult> {
+  const response = await request(`/api/compliance_check/${id}/stratified_scan`, {
+    method: 'POST',
+    body: JSON.stringify({ quota, source_file: sourceFile }),
+  })
+  return await response.json()
+}
+
+export async function listScanReports(): Promise<{ items: ScanReportSummary[]; total: number }> {
+  const response = await request('/api/compliance_check/scan_reports')
+  if (!response.ok) throw new Error('扫描报告读取失败')
+  return await response.json()
+}
+
+export async function getScanReport(reportId: string): Promise<ScanReport> {
+  const response = await request(`/api/compliance_check/scan_reports/${reportId}`)
+  if (!response.ok) throw new Error('扫描报告不存在或已清理')
   return await response.json()
 }

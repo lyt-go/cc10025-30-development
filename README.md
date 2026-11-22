@@ -11,7 +11,7 @@
 .
 ├── frontend/                 Vue 3 + Vite + TypeScript 前端
 │   ├── src/views/WorkbenchView.vue|tsx  全部模块共享工作台
-│   ├── src/data/modules.ts              18个业务模块配置
+│   ├── src/data/modules.ts              19个业务模块配置
 │   ├── src/api/              统一请求封装
 │   └── vite.config.ts        dev server 配置（open: false）
 ├── backend/                  FastAPI（Python） 后端
@@ -68,6 +68,24 @@ npm run dev
 | 质量报告 | `quality_report` | 质量报告 | 报告编号、关联资产、检核时间 |
 | 回收清理 | `reclaim_job` | 回收任务 | 任务编号、目标资产、回收范围 |
 | 变更通知 | `change_notice` | 变更通知 | 通知编号、关联资产、变更类型 |
+| 外部标签样本 | `external_label_sample` | 标签样本 | 样本编号、来源文件、文件行号、分区键、文件分组、标签来源、归属组、标签版本 |
+
+## 外部标签样本与分层扫描
+
+外部检查员抽样文件缺少可按实际标签来源核对的入口，平台提供专用链路：
+
+- `POST /api/external_label_sample/import`：上传样本文件（CSV 表头：`分区键,文件分组,标签来源,优先级`），
+  按分区键（对照分区规划）与标签来源（对照已生效标签）逐行导入，生成可逐行核验的样本清单。
+  分区匹配失败的行保留"待核"，不计入合规覆盖；已确认样本关联文件原行号与实际使用的标签版本。
+  同一文件分组被标签来源拆成多个新归属组时逐行标注口径冲突。
+- `POST /api/compliance_check/{id}/stratified_scan`：按外部标签样本清单实际选择分区并提交本轮
+  分层扫描（`quota` 为本轮名额，`source_file` 留空则取规则的扫描范围）。取样一律按标签来源的
+  新归属组分层轮取，不延续文件旧组；抽中的原始行号、取样分组与未核行落库为扫描报告
+  （`backend/app/data/quality/scan_report_*.json`），未抽中的分区保留跳过原因（名额不足/归属未确认）。
+- `GET /api/compliance_check/scan_reports` / `GET /api/compliance_check/scan_reports/{report_id}`：
+  扫描报告索引与重新打开，复核实际读取的文件行（沿用导入时的文件行号）。
+
+场景回归测试：`cd backend && .venv/bin/python test_external_label_scan.py`。
 
 ## 约定
 
